@@ -1,0 +1,64 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node / Angular
+node_modules/
+dist/
+.cache/
+.angular/
+coverage/
+
+# Env
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.Python
+build/
+develop-eggs/
+parts/
+var/
+sdist/
+*.egg
+pip-wheel-metadata/
+venv/
+.env/
+ENV/
+.venv/
+
+# Databases / data
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Frontend build output
+frontend/dist/
+frontend/.angular/
+frontend/node_modules/
+
+# Python virtual envs inside services
+auth_service/venv/
+inventory_service/venv/
+sales_service/venv/

@@ -1,0 +1,79 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: smim-frontend:latest
+    environment:
+      API_INVENTORY: http://inventory:5001
+      API_SALES: http://sales:5002
+      API_AUTH: http://auth:5003
+    ports:
+      - "8081:80"
+    depends_on:
+      - inventory
+      - sales
+      - auth
+
+  inventory:
+    build: ./inventory_service
+    container_name: inventory
+    ports: ["5001:5001"]
+    environment:
+      - FLASK_ENV=production
+      - DB_PATH=/data/inventory.db
+      - CORS_ORIGINS=*
+      - AUTH_URL=http://auth:5003
+      - PORT=5001
+    volumes:
+      - inventory_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5001/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  sales:
+    build: ./sales_service
+    container_name: sales
+    depends_on: 
+      - inventory
+      - auth
+    ports: ["5002:5002"]
+    environment:
+      - FLASK_ENV=production
+      - INVENTORY_URL=http://inventory:5001
+      - AUTH_URL=http://auth:5003
+      - DB_PATH=/data/sales.db
+      - CORS_ORIGINS=*
+      - PORT=5002
+    volumes:
+      - sales_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5002/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  auth:
+    build: ./auth_service
+    container_name: auth
+    ports: ["5003:5003"]
+    environment:
+      - CORS_ORIGINS=*
+      - PORT=5003
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5003/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  inventory_data:
+  sales_data:
